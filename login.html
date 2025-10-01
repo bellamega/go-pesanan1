@@ -13,8 +13,12 @@
         
         <form id="login-form">
             <div class="mb-4">
-                <label for="username" class="block text-gray-700 font-bold mb-2">Kode Meja</label>
-                <input type="text" id="username" name="username" class="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500" placeholder="Kode Meja" required>
+                <label for="kodeMeja" class="block text-gray-700 font-bold mb-2">Kode Meja</label>
+                <input type="text" id="kodeMeja" name="kodeMeja" class="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500" placeholder="Kode Meja" required>
+            </div>
+            <div class="mb-4">
+                <label for="nama" class="block text-gray-700 font-bold mb-2">Nama Kamu</label>
+                <input type="text" id="nama" name="nama" class="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500" placeholder="Nama Kamu" required>
             </div>
             <div class="mb-6">
                 <label for="password" class="block text-gray-700 font-bold mb-2">Password Otomatis</label>
@@ -31,14 +35,16 @@
         document.getElementById('login-form').addEventListener('submit', function(event) {
             event.preventDefault();
             
-            const username = document.getElementById('username').value;
+            const kodeMeja = document.getElementById('kodeMeja').value;
+            const nama = document.getElementById('nama').value;
             const password = document.getElementById('password').value;
 
-            if (username && password) {
-                localStorage.setItem('username', username);
+            if (kodeMeja && nama && password) {
+                localStorage.setItem('kodeMeja', kodeMeja);
+                localStorage.setItem('nama', nama);
                 window.location.href = 'index.html';
             } else {
-                alert('Kode meja dan password tidak boleh kosong!');
+                alert('Kode meja, nama, dan password tidak boleh kosong!');
             }
         });
     </script>

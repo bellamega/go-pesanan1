@@ -12,31 +12,41 @@
     </style>
 </head>
 <body class="bg-gray-100 font-sans">
-    <script>
-        document.addEventListener('DOMContentLoaded', () => {
-            const username = localStorage.getItem('username');
-            if (!username) {
-                window.location.href = 'login.html';
-            } else {
-                document.getElementById('welcome-message').textContent = `Selamat Datang, ${username}`;
-            }
-        });
-    </script>
-    
-    <header class="bg-white shadow-md py-4 sticky top-0 z-50">
-        <div class="container mx-auto flex justify-between items-center px-4">
-            <h1 class="text-2xl font-bold text-gray-800">Resto Jaya</h1>
-            <span id="welcome-message" class="text-lg text-gray-600"></span>
-            <div class="flex items-center space-x-4">
-                <a href="#menu-makanan" class="text-gray-600 hover:text-blue-500 transition-colors">Makanan</a>
-                <a href="#menu-minuman" class="text-gray-600 hover:text-blue-500 transition-colors">Minuman</a>
+    <header class="bg-gradient-to-r from-blue-500 to-blue-300 shadow-md py-4 sticky top-0 z-50 border-b-4 border-blue-600">
+        <div class="container mx-auto flex flex-wrap md:flex-nowrap justify-between items-center px-4">
+            <h1 class="text-2xl font-bold text-gray-800 flex-1">Resto Jaya</h1>
+            <span id="welcome-message" class="text-lg font-semibold text-white"></span>
+
+            <!-- Hamburger button for mobile -->
+            <div class="md:hidden flex-1 flex justify-end">
+                <button id="menu-toggle" class="text-gray-700 focus:outline-none">
+                    <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"/>
+                    </svg>
+                </button>
             </div>
-        </div>
+            <!-- Desktop menu -->
+    <div id="desktop-menu" class="hidden md:flex items-center space-x-4 flex-1 justify-end">
+        <a href="#menu-makanan" class="text-white hover:text-yellow-300 transition-colors">Makanan</a>
+        <a href="#menu-minuman" class="text-white hover:text-yellow-300 transition-colors">Minuman</a>
+        <button id="logout-btn" class="ml-4 bg-red-500 text-white px-4 py-2 rounded hover:bg-red-600 transition-colors">Logout</button>
+    </div>
+
+<!-- Mobile menu -->
+    <div id="mobile-menu" class="md:hidden hidden px-4 pb-4">
+        <a href="#menu-makanan" class="block py-2 text-white hover:text-yellow-300">Makanan</a>
+        <a href="#menu-minuman" class="block py-2 text-white hover:text-yellow-300">Minuman</a>
+        <button id="logout-btn-mobile" class="w-full bg-red-500 text-white px-4 py-2 rounded hover:bg-red-600 mt-2">Logout</button>
+    </div>
+
     </header>
     
     <main class="container mx-auto p-4 md:p-8">
         <section id="menu-makanan" class="mb-12">
-            <h2 class="text-3xl font-bold text-gray-800 mb-6">Makanan</h2>
+            <h2 class="text-3xl font-bold text-blue-700 mb-6 flex items-center gap-2">
+                <svg class="w-7 h-7 text-yellow-400" fill="currentColor" viewBox="0 0 20 20"><path d="M10 15l-5.878 3.09 1.122-6.545L.488 6.91l6.561-.955L10 0l2.951 5.955 6.561.955-4.756 4.635 1.122 6.545z"/></svg>
+                Makanan
+            </h2>
             <div id="food-menu-list" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
                 </div>
         </section>
@@ -57,27 +67,22 @@
         </button>
     </div>
     
-    <div id="keranjang" class="fixed inset-0 bg-black bg-opacity-50 hidden items-center justify-center p-4">
-        <div class="bg-white rounded-lg shadow-xl w-full max-w-2xl p-6">
-            <div class="flex justify-between items-center mb-4">
-                <h2 class="text-2xl font-bold">Keranjang Belanja</h2>
-                <button id="close-cart-btn" class="text-gray-500 hover:text-gray-700">
-                    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
-                    </svg>
-                </button>
+    <div id="keranjang" class="fixed inset-0 bg-black bg-opacity-50 hidden items-center justify-center p-4 z-50">
+        <div class="bg-white rounded-lg shadow-xl w-full max-w-2xl p-6 relative">
+            <button id="close-cart-btn" class="absolute top-4 right-4 text-gray-500 hover:text-gray-700 text-2xl">&times;</button>
+            <h2 class="text-2xl font-bold mb-4">Keranjang Pesanan</h2>
+            <div id="cart-items" class="space-y-4 max-h-64 overflow-y-auto mb-4"></div>
+            <div class="flex justify-between items-center text-lg font-bold mb-4">
+                <span>Total:</span>
+                <span id="cart-total">Rp 0</span>
             </div>
-            <div id="cart-items" class="space-y-4 max-h-96 overflow-y-auto mb-4">
-                </div>
-            <div class="border-t pt-4">
-                <div class="flex justify-between items-center text-lg font-bold mb-4">
-                    <span>Total:</span>
-                    <span id="cart-total">Rp 0</span>
-                </div>
-                <button id="checkout-btn" class="w-full bg-blue-500 text-white font-bold py-3 rounded-lg hover:bg-blue-600 transition-colors">
-                    Bayar Sekarang
-                </button>
+            <div class="mb-4">
+                <label for="cart-note" class="block text-gray-700 font-semibold mb-2">Catatan untuk pesanan (opsional):</label>
+                <textarea id="cart-note" class="w-full border rounded-lg p-2 focus:outline-none focus:ring-2 focus:ring-blue-500" rows="2" placeholder="Contoh: Nasi tanpa sambal, minuman tanpa es"></textarea>
             </div>
+            <button id="checkout-btn" class="w-full bg-blue-500 text-white font-bold py-3 rounded-lg hover:bg-blue-600 transition-colors">
+                Bayar Sekarang
+            </button>
         </div>
     </div>
 
@@ -119,6 +124,55 @@
         </button>
     </div>
 </div>
+
+    <script>
+        // Hapus script lama yang mencari username!
+        // document.addEventListener('DOMContentLoaded', () => {
+        //     const username = localStorage.getItem('username');
+        //     if (!username) {
+        //         window.location.href = 'login.html';
+        //     } else {
+        //         document.getElementById('welcome-message').textContent = `Selamat Datang, ${username}`;
+        //     }
+        // });
+
+        // Pakai ini saja:
+        const nama = localStorage.getItem('nama');
+        const kodeMeja = localStorage.getItem('kodeMeja');
+        if (!nama || !kodeMeja) {
+            window.location.href = 'login.html';
+        } else {
+            document.getElementById('welcome-message').textContent = `Selamat datang, ${nama}, kode meja: ${kodeMeja}`;
+        }
+
+        // Toggle mobile menu
+        const menuToggle = document.getElementById('menu-toggle');
+        const mobileMenu = document.getElementById('mobile-menu');
+        const desktopMenu = document.getElementById('desktop-menu');
+        menuToggle.addEventListener('click', () => {
+            mobileMenu.classList.toggle('hidden');
+        });
+
+        // Logout button for desktop
+        document.getElementById('logout-btn').addEventListener('click', function() {
+            localStorage.removeItem('nama');
+            localStorage.removeItem('kodeMeja');
+            window.location.href = 'login.html';
+        });
+        // Logout button for mobile
+        document.getElementById('logout-btn-mobile').addEventListener('click', function() {
+            localStorage.removeItem('nama');
+            localStorage.removeItem('kodeMeja');
+            window.location.href = 'login.html';
+        });
+
+        // Ambil elemen textarea catatan
+
+
+        document.getElementById('close-cart-btn').addEventListener('click', () => {
+           
+        });
+    </script>
     
     <script src="script.js"></script>
 </body>
