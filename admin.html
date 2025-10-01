@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -228,4 +229,236 @@ if (document.getElementById('filter-status')) {
 }
     </script>
 </body>
+=======
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Admin - Resto Jaya</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-100 min-h-screen p-4">
+    <div class="max-w-3xl mx-auto bg-white rounded-xl shadow-lg p-6 mt-8 relative">
+        <!-- Tombol Logout di pojok kanan atas -->
+        <button id="logout-admin-btn" class="absolute top-4 right-4 bg-red-500 text-white px-4 py-2 rounded hover:bg-red-600 transition-colors">
+            Logout
+        </button>
+        <h1 class="text-2xl font-bold mb-6 text-blue-700">Halaman Admin</h1>
+        <!-- Tabs -->
+        <div class="flex border-b mb-6">
+            <button id="tab-orders" class="relative py-2 px-4 font-semibold border-b-2 border-blue-600 text-blue-600 focus:outline-none">
+                Pesanan Masuk
+                <span id="notif-bubble" class="hidden absolute -top-1 -right-1 bg-red-500 text-white text-xs rounded-full px-2 py-0.5 font-bold"></span>
+            </button>
+            <button id="tab-menu" class="py-2 px-4 font-semibold text-gray-600 hover:text-blue-600 focus:outline-none">Tambah Menu</button>
+        </div>
+        <!-- Pesanan Masuk -->
+        <section id="section-orders">
+            <h2 class="text-xl font-semibold mb-2">Daftar Pesanan Pelanggan</h2>
+            <div class="mb-3">
+                <label for="filter-status" class="mr-2 font-semibold">Filter Status:</label>
+                <select id="filter-status" class="border rounded p-1">
+                    <option value="all">Semua</option>
+                    <option value="baru">Baru</option>
+                    <option value="process">Sedang Dibuat</option>
+                    <option value="done">Selesai</option>
+                </select>
+            </div>
+            <div class="overflow-x-auto">
+                <table class="min-w-full bg-white border rounded">
+                    <thead>
+                        <tr>
+                            <th class="px-3 py-2 border">Nama</th>
+                            <th class="px-3 py-2 border">Kode Meja</th>
+                            <th class="px-3 py-2 border">Waktu Pesan</th>
+                            <th class="px-3 py-2 border">Pesanan</th>
+                            <th class="px-3 py-2 border">Catatan</th>
+                            <th class="px-3 py-2 border">Total</th>
+                            <th class="px-3 py-2 border">Status</th>
+                            <th class="px-3 py-2 border">Aksi</th>
+                        </tr>
+                    </thead>
+                    <tbody id="order-list"></tbody>
+                </table>
+            </div>
+        </section>
+        <!-- Tambah Menu -->
+        <section id="section-menu" class="hidden">
+            <h2 class="text-xl font-semibold mb-2">Tambah Menu Baru</h2>
+            <form id="add-menu-form" class="space-y-3">
+                <input type="text" id="menu-name" class="w-full border rounded p-2" placeholder="Nama Menu" required>
+                <input type="number" id="menu-price" class="w-full border rounded p-2" placeholder="Harga" required>
+                <select id="menu-category" class="w-full border rounded p-2" required>
+                    <option value="">Pilih Kategori</option>
+                    <option value="food">Makanan</option>
+                    <option value="drink">Minuman</option>
+                </select>
+                <input type="text" id="menu-image" class="w-full border rounded p-2" placeholder="URL Gambar (opsional)">
+                <button type="submit" class="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700">Tambah Menu</button>
+            </form>
+            <div id="add-menu-success" class="text-green-600 mt-2 hidden">Menu berhasil ditambahkan!</div>
+        </section>
+    </div>
+    <script>
+const tabOrders = document.getElementById('tab-orders');
+const tabMenu = document.getElementById('tab-menu');
+const sectionOrders = document.getElementById('section-orders');
+const sectionMenu = document.getElementById('section-menu');
+
+tabOrders.addEventListener('click', () => {
+    tabOrders.classList.add('border-blue-600', 'text-blue-600');
+    tabMenu.classList.remove('border-blue-600', 'text-blue-600');
+    tabMenu.classList.add('text-gray-600');
+    sectionOrders.classList.remove('hidden');
+    sectionMenu.classList.add('hidden');
+});
+tabMenu.addEventListener('click', () => {
+    tabMenu.classList.add('border-blue-600', 'text-blue-600');
+    tabOrders.classList.remove('border-blue-600', 'text-blue-600');
+    tabOrders.classList.add('text-gray-600');
+    sectionMenu.classList.remove('hidden');
+    sectionOrders.classList.add('hidden');
+});
+
+// Load orders with status & action buttons
+function loadOrders() {
+    const orderList = document.getElementById('order-list');
+    const filter = document.getElementById('filter-status') ? document.getElementById('filter-status').value : 'all';
+    let orders = JSON.parse(localStorage.getItem('orders') || '[]');
+
+    // Filter berdasarkan status
+    let filteredOrders = orders;
+    if (filter === 'baru') {
+        filteredOrders = orders.filter(order => !order.status);
+    } else if (filter === 'process') {
+        filteredOrders = orders.filter(order => order.status === 'process');
+    } else if (filter === 'done') {
+        filteredOrders = orders.filter(order => order.status === 'done');
+    }
+
+    if (filteredOrders.length === 0) {
+        orderList.innerHTML = `<tr><td colspan="8" class="text-center text-gray-500 py-4">Belum ada pesanan.</td></tr>`;
+        // Notifikasi bubble tetap update
+        updateNotifBubble(orders);
+        return;
+    }
+    orderList.innerHTML = filteredOrders.map((order, idx) => {
+        // Format tanggal & jam
+        let waktuStr = '-';
+        if (order.waktu) {
+            const d = new Date(order.waktu);
+            waktuStr = d.toLocaleString('id-ID', {
+                day: '2-digit', month: '2-digit', year: 'numeric',
+                hour: '2-digit', minute: '2-digit', second: '2-digit'
+            });
+        }
+        // Status badge
+        let statusBadge = '';
+        if (order.status === 'done') {
+            statusBadge = '<span class="bg-green-200 text-green-800 px-2 py-1 rounded text-xs font-semibold">Selesai</span>';
+        } else if (order.status === 'process') {
+            statusBadge = '<span class="bg-yellow-200 text-yellow-800 px-2 py-1 rounded text-xs font-semibold">Sedang Dibuat</span>';
+        } else {
+            statusBadge = '<span class="bg-gray-200 text-gray-700 px-2 py-1 rounded text-xs font-semibold">Baru</span>';
+        }
+        return `
+            <tr>
+                <td class="px-3 py-2 border">${order.nama}</td>
+                <td class="px-3 py-2 border">${order.kodeMeja}</td>
+                <td class="px-3 py-2 border">${waktuStr}</td>
+                <td class="px-3 py-2 border">${order.items.map(i => `${i.name} x${i.quantity}`).join(', ')}</td>
+                <td class="px-3 py-2 border">${order.note || '-'}</td>
+                <td class="px-3 py-2 border">Rp ${order.total.toLocaleString('id-ID')}</td>
+                <td class="px-3 py-2 border text-center">${statusBadge}</td>
+                <td class="px-3 py-2 border flex flex-col gap-1">
+                    <button class="btn-process bg-yellow-400 hover:bg-yellow-500 text-white px-2 py-1 rounded text-xs mb-1" data-idx="${orders.indexOf(order)}">Sedang Dibuat</button>
+                    <button class="btn-done bg-green-500 hover:bg-green-600 text-white px-2 py-1 rounded text-xs mb-1" data-idx="${orders.indexOf(order)}">Sudah Selesai</button>
+                    <button class="btn-delete bg-red-500 hover:bg-red-600 text-white px-2 py-1 rounded text-xs" data-idx="${orders.indexOf(order)}">Hapus</button>
+                </td>
+            </tr>
+        `;
+    }).join('');
+
+    // Notifikasi bubble tetap update
+    updateNotifBubble(orders);
+}
+
+// Fungsi update notif bubble
+function updateNotifBubble(orders) {
+    const notifBubble = document.getElementById('notif-bubble');
+    const newOrdersCount = orders.filter(order => !order.status || order.status === 'process').length;
+    if (newOrdersCount > 0) {
+        notifBubble.textContent = newOrdersCount;
+        notifBubble.classList.remove('hidden');
+    } else {
+        notifBubble.classList.add('hidden');
+    }
+}
+
+// Handler untuk tombol aksi pesanan
+document.addEventListener('click', function(e) {
+    if (e.target.classList.contains('btn-process')) {
+        const idx = e.target.dataset.idx;
+        let orders = JSON.parse(localStorage.getItem('orders') || '[]');
+        orders[idx].status = 'process';
+        localStorage.setItem('orders', JSON.stringify(orders));
+        loadOrders();
+    }
+    if (e.target.classList.contains('btn-done')) {
+        const idx = e.target.dataset.idx;
+        let orders = JSON.parse(localStorage.getItem('orders') || '[]');
+        orders[idx].status = 'done';
+        localStorage.setItem('orders', JSON.stringify(orders));
+        loadOrders();
+    }
+    if (e.target.classList.contains('btn-delete')) {
+        const idx = e.target.dataset.idx;
+        let orders = JSON.parse(localStorage.getItem('orders') || '[]');
+        orders.splice(idx, 1);
+        localStorage.setItem('orders', JSON.stringify(orders));
+        loadOrders();
+    }
+});
+
+// Tambah menu baru ke localStorage
+function addMenu(e) {
+    e.preventDefault();
+    const name = document.getElementById('menu-name').value;
+    const price = parseInt(document.getElementById('menu-price').value, 10);
+    const category = document.getElementById('menu-category').value;
+    const image = document.getElementById('menu-image').value || 'https://via.placeholder.com/400x300?text=Menu';
+
+    // Ambil menu lama
+    const menus = JSON.parse(localStorage.getItem('menus') || '[]');
+    menus.push({
+        id: Date.now(),
+        name,
+        price,
+        category,
+        image
+    });
+    localStorage.setItem('menus', JSON.stringify(menus));
+    document.getElementById('add-menu-success').classList.remove('hidden');
+    document.getElementById('add-menu-form').reset();
+}
+
+document.getElementById('add-menu-form').addEventListener('submit', addMenu);
+
+document.getElementById('logout-admin-btn').addEventListener('click', function() {
+    // Jika ada data login admin di localStorage, hapus di sini
+    // localStorage.removeItem('admin'); // jika ada
+    window.location.href = 'login.html';
+});
+
+window.addEventListener('DOMContentLoaded', () => {
+    loadOrders();
+    setInterval(loadOrders, 2000); // cek pesanan baru setiap 2 detik
+});
+
+if (document.getElementById('filter-status')) {
+    document.getElementById('filter-status').addEventListener('change', loadOrders);
+}
+    </script>
+</body>
+>>>>>>> c47fd926ebe6d1ade58c352b9bce3137fbc16cc0
 </html>
