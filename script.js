@@ -1,27 +1,125 @@
 // Data menu (bisa diambil dari API di proyek nyata)
 const menu = [
-    { id: 1, name: "Nasi Goreng Spesial", price: 25000, category: "food", image: "https://via.placeholder.com/400x300.png?text=Nasi+Goreng" },
-    { id: 2, name: "Mie Ayam Bakso", price: 20000, category: "food", image: "https://via.placeholder.com/400x300.png?text=Mie+Ayam" },
-    { id: 3, name: "Sate Ayam Madura", price: 30000, category: "food", image: "https://via.placeholder.com/400x300.png?text=Sate+Ayam" },
-    { id: 4, name: "Es Teh Manis", price: 5000, category: "drink", image: "https://via.placeholder.com/400x300.png?text=Es+Teh" },
-    { id: 5, name: "Es Jeruk", price: 8000, category: "drink", image: "https://via.placeholder.com/400x300.png?text=Es+Jeruk" },
+  { 
+    id: 1, 
+    name: "Nasi Goreng Spesial", 
+    price: 25000, 
+    category: "food", 
+    image: "images/nasgor.jpg"
+  },
+  { 
+    id: 2, 
+    name: "Mie Ayam Bakso", 
+    price: 20000, 
+    category: "food", 
+    image: "images/mie-ayam.jpeg"
+  }, 
+  { 
+    id: 3, 
+    name: "Soto Ayam", 
+    price: 30000, 
+    category: "food", 
+    image: "images/soto-ayam.jpg"
+  },
+    { 
+    id: 4, 
+    name: "Sate Ayam", 
+    price: 30000, 
+    category: "food", 
+    image: "images/sate-ayam.jpeg"
+  },
+      { 
+    id: 5, 
+    name: "Mie Bakso", 
+    price: 30000, 
+    category: "food", 
+    image: "images/mie-bakso.png"
+  },
+        { 
+    id: 6, 
+    name: "Nasi Rendang", 
+    price: 30000, 
+    category: "food", 
+    image: "images/nasi-rendang.jpg"
+  },
+          { 
+    id: 7, 
+    name: "Sate Sapi", 
+    price: 30000, 
+    category: "food", 
+    image: "images/sate-sapi.jpg"
+  },
+            { 
+    id: 8, 
+    name: "Mie Goreng Spesial", 
+    price: 30000, 
+    category: "food", 
+    image: "images/mie-goreng.jpeg"
+  },
+  { 
+    id: 9, 
+    name: "Es Jeruk", 
+    price: 5000, 
+    category: "drink", 
+    image: "images/es-jeruk.jpg"
+  },
+  { 
+    id: 10, 
+    name: "Es Teh", 
+    price: 8000, 
+    category: "drink", 
+    image: "images/es-teh.jpg" 
+  },
+    { 
+    id: 11, 
+    name: "Es Teler", 
+    price: 8000, 
+    category: "drink", 
+    image: "images/es-teler.jpg" 
+  },
+      { 
+    id: 12, 
+    name: "Es Cendol", 
+    price: 8000, 
+    category: "drink", 
+    image: "images/es-cendol.jpg" 
+  },
+    { 
+    id: 13, 
+    name: "Es Sultan", 
+    price: 8000, 
+    category: "drink", 
+    image: "images/es-sultan.jpg" 
+  },
+
+    { 
+    id: 14, 
+    name: "Air Mineral", 
+    price: 8000, 
+    category: "drink", 
+    image: "images/air-mineral.png" 
+  }
 ];
+
 
 let cart = [];
 
 // Fungsi untuk membuat item menu di HTML
 const createMenuItem = (item) => {
     return `
-        <div class="bg-white rounded-lg shadow-lg p-4">
-            <img src="${item.image}" alt="${item.name}" class="w-full h-40 object-cover rounded-md mb-4">
-            <h3 class="text-xl font-bold mb-2">${item.name}</h3>
+        <div class="bg-white rounded-2xl shadow-xl p-4 flex flex-col h-full border-2 border-transparent hover:border-blue-400 transition-all duration-200">
+            <img src="${item.image}" alt="${item.name}" class="w-full h-40 object-cover rounded-xl mb-4 shadow-sm">
+            <h3 class="text-xl font-bold mb-1 text-blue-700">${item.name}</h3>
             <p class="text-gray-600 mb-4">Rp ${item.price.toLocaleString('id-ID')}</p>
-            <button class="add-to-cart-btn bg-green-500 text-white py-2 px-4 rounded-lg hover:bg-green-600 transition-colors" data-id="${item.id}">
+            <button 
+                class="add-to-cart-btn bg-gradient-to-r from-green-400 to-green-600 text-white py-2 px-4 rounded-lg hover:from-green-500 hover:to-green-700 transition-colors mt-auto font-semibold shadow"
+                data-id="${item.id}">
                 Tambah ke Keranjang
             </button>
         </div>
     `;
 };
+
 
 // Fungsi untuk mengupdate tampilan keranjang
 const updateCartUI = () => {
@@ -144,20 +242,29 @@ document.addEventListener('DOMContentLoaded', () => {
     
     floatingCartBtn.classList.add('hidden');
 
-    document.body.addEventListener('click', (e) => {
-        if (e.target.classList.contains('add-to-cart-btn')) {
-            const id = e.target.dataset.id;
-            addToCart(id);
-        }
-    });
+
 
     // Event listener untuk tombol "Bayar Sekarang" di keranjang
     document.getElementById('checkout-btn').addEventListener('click', () => {
         if (cart.length > 0) {
-            // Sembunyikan modal keranjang
+            const note = document.getElementById('cart-note').value;
+            const orders = JSON.parse(localStorage.getItem('orders') || '[]');
+            const nama = localStorage.getItem('nama');
+            const kodeMeja = localStorage.getItem('kodeMeja');
+            const total = cart.reduce((sum, item) => sum + (item.price * item.quantity), 0);
+            const waktu = new Date().toISOString(); // Tambahkan waktu ISO
+            orders.push({
+                nama,
+                kodeMeja,
+                items: cart.map(item => ({ name: item.name, quantity: item.quantity })),
+                note,
+                total,
+                waktu // simpan waktu
+            });
+            localStorage.setItem('orders', JSON.stringify(orders));
             document.getElementById('keranjang').style.display = 'none';
-            // Tampilkan modal pembayaran
             openPaymentModal();
+            console.log('Catatan pelanggan:', note);
         } else {
             alert('Keranjang Anda kosong!');
         }
@@ -189,6 +296,15 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     });
 
+    document.body.addEventListener('click', (e) => {
+        if (e.target.classList.contains('add-to-cart-btn')) {
+            const id = e.target.dataset.id;
+            addToCart(id);
+            // Tidak perlu buka modal keranjang di sini!
+        }
+    });
+
+    // Sudah ada event listener untuk floatingCartBtn:
     floatingCartBtn.addEventListener('click', () => {
         keranjangModal.style.display = 'flex';
     });
@@ -197,17 +313,14 @@ document.addEventListener('DOMContentLoaded', () => {
         keranjangModal.style.display = 'none';
     });
 
-    document.getElementById('checkout-btn').addEventListener('click', () => {
-        if (cart.length > 0) {
-            alert('Pesanan Anda berhasil! Kami akan segera memprosesnya.');
-            cart = [];
-            updateCartUI();
-            keranjangModal.style.display = 'none';
-        } else {
-            alert('Keranjang Anda kosong!');
-        }
-    });
+
 });
+
+
+
+
+
+
 
 
 
