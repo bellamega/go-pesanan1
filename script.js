@@ -1,5 +1,4 @@
-<<<<<<< HEAD
-// Data menu (bisa diambil dari API di proyek nyata)
+
 const menu = [
   { 
     id: 1, 
@@ -652,4 +651,3 @@ document.addEventListener('DOMContentLoaded', () => {
 
 
 
->>>>>>> c47fd926ebe6d1ade58c352b9bce3137fbc16cc0
