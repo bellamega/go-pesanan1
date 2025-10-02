@@ -84,5 +84,5 @@ function addMenu(e) {
 }
 
 document.getElementById('add-menu-form').addEventListener('submit', addMenu);
->>>>>>> c47fd926ebe6d1ade58c352b9bce3137fbc16cc0
+
 window.addEventListener('DOMContentLoaded', loadOrders);
