@@ -1,4 +1,4 @@
-<<<<<<< HEAD
+
 // Ambil pesanan dari localStorage (simulasi, sesuaikan dengan implementasi penyimpanan pesananmu)
 function loadOrders() {
     const orderList = document.getElementById('order-list');
@@ -41,7 +41,7 @@ function addMenu(e) {
 }
 
 document.getElementById('add-menu-form').addEventListener('submit', addMenu);
-=======
+
 // Ambil pesanan dari localStorage (simulasi, sesuaikan dengan implementasi penyimpanan pesananmu)
 function loadOrders() {
     const orderList = document.getElementById('order-list');
